@@ -2,6 +2,7 @@ import React from 'react'
 import ReactRefreshWebpackPlugin from 'next/dist/compiled/@next/react-refresh-utils/dist/ReactRefreshWebpackPlugin'
 import chalk from 'next/dist/compiled/chalk'
 import crypto from 'crypto'
+import { isMatch } from 'next/dist/compiled/micromatch'
 import { webpack } from 'next/dist/compiled/webpack/webpack'
 import path from 'path'
 import { escapeStringRegexp } from '../shared/lib/escape-regexp'
@@ -2093,7 +2094,7 @@ export default async function getBaseWebpackConfig(
             outputFileTracingRoot: config.experimental.outputFileTracingRoot,
             appDirEnabled: hasAppDir,
             turbotrace: config.experimental.turbotrace,
-            traceIgnores: config.experimental.outputFileTracingIgnores || [],
+            traceIgnores: Object.entries(config.experimental.outputFileTracingExcludes || {}).filter(([curGlob]) => isMatch(dir, [curGlob])).map(([, ignores]) => ignores).flat(),
           }
         ),
       // Moment.js is an extremely popular library that bundles large locale files
